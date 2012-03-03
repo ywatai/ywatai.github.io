@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <feed xmlns="http://www.w3.org/2005/Atom">
 
-  <title><![CDATA[カソクスルソウゾウリョク]]></title>
-  <link href="http://ywatai.github.com/atom.xml" rel="self"/>
+  <title><![CDATA[Category: Octopress | カソクスルソウゾウリョク]]></title>
+  <link href="http://ywatai.github.com/blog/categories/octopress/atom.xml" rel="self"/>
   <link href="http://ywatai.github.com/"/>
   <updated>2012-03-03T21:34:00+09:00</updated>
   <id>http://ywatai.github.com/</id>
@@ -49,18 +49,14 @@ Octopressの何がよいかといえば、あたかもRubyとgitでWebアプリ�
 
 <h2>はじめる Octopress </h2>
 
-<p>まずは、<a href="https://github.com/imathis/octopress">Octopressのリポジトリ</a>からソースを持ってきます。</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<p>まずは、<a href="https://github.com/imathis/octopress">Octopressのリポジトリ</a>からソースを持ってきます。
+<div class='bogus-wrapper'><notextile><figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
 </pre></td><td class='code'><pre><code class=''><span class='line'>git clone git clone https://github.com/imathis/octopress.git
-</span><span class='line'>cd octopress</span></code></pre></td></tr></table></div></figure>
-
-
-<p>動作にはRubyが必要なので、まずはRuby環境をセットアップします。ドキュメントには「ruby 1.9.2 を使え」と書いてあるので、rbenv で入れました。
-bundler も必要なので、ついでに入れておきます。</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</span><span class='line'>cd octopress</span></code></pre></td></tr></table></div></figure></notextile></div>
+動作にはRubyが必要なので、まずはRuby環境をセットアップします。ドキュメントには「ruby 1.9.2 を使え」と書いてあるので、rbenv で入れました。
+bundler も必要なので、ついでに入れておきます。
+<div class='bogus-wrapper'><notextile><figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
 <span class='line-number'>3</span>
 <span class='line-number'>4</span>
@@ -69,61 +65,44 @@ bundler も必要なので、ついでに入れておきます。</p>
 </span><span class='line'>rbenv rehash
 </span><span class='line'>rbenv local 1.9.2-p290
 </span><span class='line'>gem install bundler
-</span><span class='line'>rbenv rehash</span></code></pre></td></tr></table></div></figure>
-
-
-<p>つづいて依存関係をインストールして、octopress 環境をセットアップします。</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</span><span class='line'>rbenv rehash</span></code></pre></td></tr></table></div></figure></notextile></div>
+つづいて依存関係をインストールして、octopress 環境をセットアップします。
+<div class='bogus-wrapper'><notextile><figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
 </pre></td><td class='code'><pre><code class=''><span class='line'>bundle install
-</span><span class='line'>rake install</span></code></pre></td></tr></table></div></figure>
-
-
-<p>続いて、公開先を設定します。
+</span><span class='line'>rake install</span></code></pre></td></tr></table></div></figure></notextile></div>
+続いて、公開先を設定します。
 公式サイトでは github pages, heroku, rsync の3つの方法が紹介されています。
 <a href="http://pages.github.com/">Github Pages</a> を使うと、版管理と公開が1カ所でできるので、私はこれを使うことにしました。</p>
 
 <p>先にGithub にログインして<code>&lt;ユーザ名&gt;.github.com</code>なリポジトリを作ります。</p>
 
 <p>手元の設定はrakeタスクで一発です。
-実行するとリポジトリのurlを聞かれるので、<code>git@github.com:/ywatai/ywatai.githu.com</code> のように、読み書き可能なURLを指定してください。</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>rake setup_github_pages</span></code></pre></td></tr></table></div></figure>
-
+実行するとリポジトリのurlを聞かれるので、<code>git@github.com:/ywatai/ywatai.githu.com</code> のように、読み書き可能なURLを指定してください。
+<div class='bogus-wrapper'><notextile><figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>rake setup_github_pages</span></code></pre></td></tr></table></div></figure></notextile></div></p>
 
 <p>正しく設定できているか、早速確認しましょう。
-ページを生成、公開するのにも rake を使います。</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>rake generate</span></code></pre></td></tr></table></div></figure>
-
-
-<p>でデフォルト設定のままコンテンツを生成したら、以下のコマンドで公開です。</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>rake deploy</span></code></pre></td></tr></table></div></figure>
-
-
-<p>これで、github のリポジトリにコンテンツが push されました。しばらく待つとgithubからページ公開完了通知がくるので
+ページを生成、公開するのにも rake を使います。
+<div class='bogus-wrapper'><notextile><figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>rake generate</span></code></pre></td></tr></table></div></figure></notextile></div>
+でデフォルト設定のままコンテンツを生成したら、以下のコマンドで公開です。
+<div class='bogus-wrapper'><notextile><figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>rake deploy</span></code></pre></td></tr></table></div></figure></notextile></div>
+これで、github のリポジトリにコンテンツが push されました。しばらく待つとgithubからページ公開完了通知がくるので
 アクセスしてみましょう。</p>
 
-<p><img src="http://ywatai.github.com/images/octopress_initial.png"></p>
+<p><img src="/images/octopress_initial.png"></p>
 
 <p>どうでしょう？見えましたか？</p>
 
-<p>&#8230;中途半端ですが、いったんここまでに。次回、基本設定と記事執筆についてまとめる予定。</p>
+<p>...中途半端ですが、いったんここまでに。次回、基本設定と記事執筆についてまとめる予定。</p>
 
-<p>設定をいじりはじめる前に、忘れずにコミットしておきましょう。</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<p>設定をいじりはじめる前に、忘れずにコミットしておきましょう。
+<div class='bogus-wrapper'><notextile><figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
 </pre></td><td class='code'><pre><code class=''><span class='line'>git add .
-</span><span class='line'>git commit -m "initial commit."</span></code></pre></td></tr></table></div></figure>
-
-
-
+</span><span class='line'>git commit -m "initial commit."</span></code></pre></td></tr></table></div></figure></notextile></div></p>
 ]]></content>
   </entry>
   
