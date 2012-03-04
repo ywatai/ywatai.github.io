@@ -5,7 +5,7 @@
 <!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
 <head>
   <meta charset="utf-8">
-  <title>カソクスルソウゾウリョク</title>
+  <title>Ruby 1.9 の CSV ライブラリにCSVの仕様を教えられた話 - カソクスルソウゾウリョク</title>
   <meta name="author" content="ywatai">
 
   
@@ -20,7 +20,7 @@ Ruby 1. &hellip;">
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
   
-  <link rel="canonical" href="http://ywatai.github.com">
+  <link rel="canonical" href="http://ywatai.github.com/blog/2012/03/04/a-trap-of-ruby-1-dot-9-csv-library">
   <link href="/favicon.png" rel="icon">
   <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
   <script src="/javascripts/modernizr-2.0.js"></script>
@@ -64,15 +64,12 @@ Ruby 1. &hellip;">
 </nav>
   <div id="main">
     <div id="content">
-      <div class="blog-index">
+      <div>
+<article class="hentry" role="article">
   
-  
-  
-    <article>
-      
   <header>
     
-      <h1 class="entry-title"><a href="/blog/2012/03/04/a-trap-of-ruby-1-dot-9-csv-library/">Ruby 1.9 の CSV ライブラリにCSVの仕様を教えられた話</a></h1>
+      <h1 class="entry-title">Ruby 1.9 の CSV ライブラリにCSVの仕様を教えられた話</h1>
     
     
       <p class="meta">
@@ -95,7 +92,7 @@ Ruby 1. &hellip;">
   </header>
 
 
-  <div class="entry-content"><p>Octopress の記事が尻切れとんぼな状態ですが、先にコネタを。</p>
+<div class="entry-content"><p>Octopress の記事が尻切れとんぼな状態ですが、先にコネタを。</p>
 
 <p><a href="http://doc.ruby-lang.org/ja/1.8.7/class/CSV.html">Ruby 1.8標準添付のCSVライブラリ</a>は遅いやら、
 APIがイマイチ（IOストリームをストリームとして処理できないのが特に&#8230;）やらで使いづらかったのですが
@@ -104,27 +101,54 @@ Ruby 1.9では<a href="http://fastercsv.rubyforge.org">FasterCSV</a>のコード
 CSVのパースに手をかけたくなかった私は飛びついたのですが、この CSV ライブラリ、<a href="http://www.ietf.org/rfc/rfc4180.txt">RFC4180</a>準拠を
 うたっていて、大変融通が利かない子だったのでした&#8230;</p>
 
+<!-- more -->
+
+
+<p>今回私がハマったのは、以下のようなCSVを食わせたためでした。</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>1, "hogehoge"
+</span><span class='line'>2, "fugafuga"</span></code></pre></td></tr></table></div></figure>
+
+
+<p>こいつを食わせると、Ruby 1.9 のCSVライブラリは以下のように例外を投げて止まります。</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>CSV::MalformedCSVError: Illegal quoting on line 1.</span></code></pre></td></tr></table></div></figure>
+
+
+<p>わかりにくいですが、カンマの後にスペースが入っているのが気に入らないと仰せです。</p>
+
+<p>ちなみに、上の例では後続のフィールドがクォートされていなればエラーを吐きません。
+この場合どうなるかというと、2番目のフィールドは &#8221; hogeehoge&#8221; と半角スペース付きの値として扱われるのですね。
+手元で適当に作ったテストデータを食わせたときにデータによってこけたり、こけなかったりしたので、えらくハマりました。</p>
+
+<p>ハマりにハマったあげくRdoc経由で冒頭の<a href="http://www.ietf.org/rfc/rfc4180.txt">CSVのRFC</a>にたどり着いたのですが、カンマの前後のスペースはRFC的には誤りなのですねぇ&#8230;</p>
+
+<p>なのですが&#8230;</p>
+
+<p><strong>後付けの、しかもinformationalなRFCにそこまで忠実に従わなくてもいいじゃないか！</strong></p>
+
+<hr />
+
+<p>&#8230;と、怒りに任せてこの原稿を書きなぐった後、ためしに Ruby 1.8 のCSVライブラリに同じデータを食わせてみたところ、
+Ruby 1.8 のCSVの方はしれっと空配列を返してきたのでした (ruby 1.8.7-p358 で確認)。</p>
+
+<p>Ruby 1.9 の CSV の挙動の方がまとも&#8230;文句言ってごめんなさい。私が悪うございました。</p>
+
+<p>さて、ノーマライズしてCSVに食わせるか、それとも車輪の再発明をするか&#8230;それが問題だ。</p>
 </div>
-  
-  
-    <footer>
-      <a rel="full-article" href="/blog/2012/03/04/a-trap-of-ruby-1-dot-9-csv-library/">続きを読む &rarr;</a>
-    </footer>
-  
 
 
-    </article>
-  
-  
-    <article>
+  <footer>
+    <p class="meta">
       
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2012/03/03/start-blogging-with-octopress/">Octopress はじめました</a></h1>
-    
-    
-      <p class="meta">
-        
+  
+
+<span class="byline author vcard">Posted by <span class="fn">ywatai</span></span>
+
+      
 
 
 
@@ -136,37 +160,38 @@ CSVのパースに手をかけたくなかった私は飛びついたのです�
   
 
 
-<time datetime="2012-03-03T19:41:00+09:00" pubdate data-updated="true">2012/03/03</time>
-        
-      </p>
+<time datetime="2012-03-04T22:35:00+09:00" pubdate data-updated="true">2012/03/04</time>
+      
+
+<span class="categories">
+  
+    <a class='category' href='/blog/categories/ruby/'>Ruby</a>
+  
+</span>
+
+
+    </p>
     
-  </header>
+      <div class="sharing">
+  
+  <a href="http://twitter.com/share" class="twitter-share-button" data-url="http://ywatai.github.com/blog/2012/03/04/a-trap-of-ruby-1-dot-9-csv-library/" data-via="ywatai" data-counturl="http://ywatai.github.com/blog/2012/03/04/a-trap-of-ruby-1-dot-9-csv-library/" >Tweet</a>
+  
+  
+  
+</div>
 
-
-  <div class="entry-content"><h2><a href="http://octopress.org/">Octopress</a> とは</h2>
-
-<p>Blogライクな静的コンテンツ管理/生成エンジン<a href="http://jekyllrb.com/">Jekill</a> をベースに
-イケてるテンプレなどを被せたフレームワークです。（Jekill単体で使ったことがないので、嘘があるかも）
-Octopressの何がよいかといえば、あたかもRubyとgitでWebアプリケーションを書くような感覚でブログが書けるのです。
-ブログツールに虐げられていたプログラマにとっての救世主！</p>
+    
+    <p class="meta">
+      
+        <a class="basic-alignment left" href="/blog/2012/03/03/start-blogging-with-octopress/" title="Previous Post: Octopress はじめました">&laquo; Octopress はじめました</a>
+      
+      
+    </p>
+  </footer>
+</article>
 
 </div>
-  
-  
-    <footer>
-      <a rel="full-article" href="/blog/2012/03/03/start-blogging-with-octopress/">続きを読む &rarr;</a>
-    </footer>
-  
 
-
-    </article>
-  
-  <div class="pagination">
-    
-    <a href="/blog/archives">Blog Archives</a>
-    
-  </div>
-</div>
 <aside class="sidebar">
   
     <section>
@@ -192,7 +217,7 @@ Octopressの何がよいかといえば、あたかもRubyとgitでWebアプリ�
 <section>
   <h1>Latest Tweets</h1>
   <ul id="tweets">
-    <li class="loading">Status updating&#8230;</li>
+    <li class="loading">Status updating...</li>
   </ul>
   <script type="text/javascript">
     $.domReady(function(){
@@ -208,6 +233,7 @@ Octopressの何がよいかといえば、あたかもRubyとgitでWebアプリ�
 
   
 </aside>
+
 
     </div>
   </div>

@@ -4,7 +4,7 @@
   <title><![CDATA[カソクスルソウゾウリョク]]></title>
   <link href="http://ywatai.github.com/atom.xml" rel="self"/>
   <link href="http://ywatai.github.com/"/>
-  <updated>2012-03-03T21:40:50+09:00</updated>
+  <updated>2012-03-04T23:54:28+09:00</updated>
   <id>http://ywatai.github.com/</id>
   <author>
     <name><![CDATA[ywatai]]></name>
@@ -12,6 +12,60 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[Ruby 1.9 の CSV ライブラリにCSVの仕様を教えられた話]]></title>
+    <link href="http://ywatai.github.com/blog/2012/03/04/a-trap-of-ruby-1-dot-9-csv-library/"/>
+    <updated>2012-03-04T22:35:00+09:00</updated>
+    <id>http://ywatai.github.com/blog/2012/03/04/a-trap-of-ruby-1-dot-9-csv-library</id>
+    <content type="html"><![CDATA[<p>Octopress の記事が尻切れとんぼな状態ですが、先にコネタを。</p>
+
+<p><a href="http://doc.ruby-lang.org/ja/1.8.7/class/CSV.html">Ruby 1.8標準添付のCSVライブラリ</a>は遅いやら、
+APIがイマイチ（IOストリームをストリームとして処理できないのが特に&#8230;）やらで使いづらかったのですが
+Ruby 1.9では<a href="http://fastercsv.rubyforge.org">FasterCSV</a>のコードが取り込まれたらしく、
+<a href="http://doc.ruby-lang.org/ja/1.9.3/class/CSV.html">API</a>が変更になっています。
+CSVのパースに手をかけたくなかった私は飛びついたのですが、この CSV ライブラリ、<a href="http://www.ietf.org/rfc/rfc4180.txt">RFC4180</a>準拠を
+うたっていて、大変融通が利かない子だったのでした&#8230;</p>
+
+<!-- more -->
+
+
+<p>今回私がハマったのは、以下のようなCSVを食わせたためでした。</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>1, "hogehoge"
+</span><span class='line'>2, "fugafuga"</span></code></pre></td></tr></table></div></figure>
+
+
+<p>こいつを食わせると、Ruby 1.9 のCSVライブラリは以下のように例外を投げて止まります。</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>CSV::MalformedCSVError: Illegal quoting on line 1.</span></code></pre></td></tr></table></div></figure>
+
+
+<p>わかりにくいですが、カンマの後にスペースが入っているのが気に入らないと仰せです。</p>
+
+<p>ちなみに、上の例では後続のフィールドがクォートされていなればエラーを吐きません。
+この場合どうなるかというと、2番目のフィールドは &#8221; hogeehoge&#8221; と半角スペース付きの値として扱われるのですね。
+手元で適当に作ったテストデータを食わせたときにデータによってこけたり、こけなかったりしたので、えらくハマりました。</p>
+
+<p>ハマりにハマったあげくRdoc経由で冒頭の<a href="http://www.ietf.org/rfc/rfc4180.txt">CSVのRFC</a>にたどり着いたのですが、カンマの前後のスペースはRFC的には誤りなのですねぇ&#8230;</p>
+
+<p>なのですが&#8230;</p>
+
+<p><strong>後付けの、しかもinformationalなRFCにそこまで忠実に従わなくてもいいじゃないか！</strong></p>
+
+<hr />
+
+<p>&#8230;と、怒りに任せてこの原稿を書きなぐった後、ためしに Ruby 1.8 のCSVライブラリに同じデータを食わせてみたところ、
+Ruby 1.8 のCSVの方はしれっと空配列を返してきたのでした (ruby 1.8.7-p358 で確認)。</p>
+
+<p>Ruby 1.9 の CSV の挙動の方がまとも&#8230;文句言ってごめんなさい。私が悪うございました。</p>
+
+<p>さて、ノーマライズしてCSVに食わせるか、それとも車輪の再発明をするか&#8230;それが問題だ。</p>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[Octopress はじめました]]></title>
