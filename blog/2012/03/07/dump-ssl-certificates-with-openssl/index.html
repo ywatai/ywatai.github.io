@@ -1,0 +1,294 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>SSL証明書のトラブルシュートに openssl - カソクスルソウゾウリョク</title>
+  <meta name="author" content="ywatai">
+
+  
+  <meta name="description" content="仕事柄、時折ヒトサマからお預かりしたサーバ証明書がらみでトラブルシュートが
+必要になることがあります。そんなときには openssl コマンドの出番な訳ですが、
+滅多に使わないので使い方なんて覚えていない訳ですよ。えぇ。 そして、その度に使い方を調べるのにやたらと時間を食う、という&#8230; &hellip;">
+  
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="http://ywatai.github.com/blog/2012/03/07/dump-ssl-certificates-with-openssl">
+  <link href="/favicon.png" rel="icon">
+  <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <script src="/javascripts/modernizr-2.0.js"></script>
+  <script src="/javascripts/ender.js"></script>
+  <script src="/javascripts/octopress.js" type="text/javascript"></script>
+  <link href="/atom.xml" rel="alternate" title="カソクスルソウゾウリョク" type="application/atom+xml">
+  <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+<link href="http://fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+<link href="http://fonts.googleapis.com/css?family=PT+Sans:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+
+  
+
+</head>
+
+<body   >
+  <header role="banner"><hgroup>
+  <h1><a href="/">カソクスルソウゾウリョク</a></h1>
+  
+    <h2>Imagination drives creativity</h2>
+  
+</hgroup>
+
+</header>
+  <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <li><a href="/atom.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
+  
+</ul>
+  
+<form action="http://google.com/search" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="q" value="site:ywatai.github.com" />
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+  
+<ul class="main-navigation">
+  <li><a href="/">Blog</a></li>
+  <li><a href="/blog/archives">Archives</a></li>
+</ul>
+
+</nav>
+  <div id="main">
+    <div id="content">
+      <div>
+<article class="hentry" role="article">
+  
+  <header>
+    
+      <h1 class="entry-title">SSL証明書のトラブルシュートに openssl</h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2012-03-07T01:38:00+09:00" pubdate data-updated="true">2012/03/07</time>
+        
+      </p>
+    
+  </header>
+
+
+<div class="entry-content"><p>仕事柄、時折ヒトサマからお預かりしたサーバ証明書がらみでトラブルシュートが
+必要になることがあります。そんなときには openssl コマンドの出番な訳ですが、
+滅多に使わないので使い方なんて覚えていない訳ですよ。えぇ。</p>
+
+<p>そして、その度に使い方を調べるのにやたらと時間を食う、という&#8230;
+そんな残念な自分のためのよく使うコマンドリストです。</p>
+
+<!-- more -->
+
+
+<h2>秘密鍵と証明書のペアが一致するか検証する</h2>
+
+<p>まずは、キーペアが間違っていないか検証します。これが駄目ならもうあきらめるしか。</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>openssl s_server -key &lt;サーバ鍵> -cert &lt;証明書ファイル></span></code></pre></td></tr></table></div></figure>
+
+
+<p>問題がなければ openssl のサーバが立ち上がるはずです。同じくopenssl の s_clientコマンドで
+以下のようにしてつないでみれば証明書の中身も確認できます。</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>openssl s_server -key &lt;サーバ鍵> -cert &lt;証明書ファイル></span></code></pre></td></tr></table></div></figure>
+
+
+<h2>証明書チェインがつながっているか検証する</h2>
+
+<p>続いてよくやる作業としては、証明書チェインの検証があります。チェインが切れていても
+ブラウザによってはよしなにやってくれるため気づかないこともありますが、かっこ悪いですしね。
+s_server のオプションを眺めてみるとそれっぽいものもありますが、私は普段はサーバを上げずに
+検証できる verify コマンドを使っています。</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>openssl verify -CAfile &lt;CA証明書> &lt;証明書ファイル></span></code></pre></td></tr></table></div></figure>
+
+
+<p>検証候補のCA証明書が複数あって、かつ1ディレクトリにまとめてある場合には以下も使えます。</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>openssl verify -CApath &lt;CA証明書ディレクトリのパス> &lt;証明書ファイル></span></code></pre></td></tr></table></div></figure>
+
+
+<h2>証明書の中身を人間が読める形式でダンプする</h2>
+
+<p>どうも検証が通らなくて、何かおかしいぞ、と言うときには、その証明書が何者なのかを調べる
+ことになる訳です。</p>
+
+<p>x509形式の場合には、以下で人間が読める形式にダンプ => issuer でググるのが個人的な定番。</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>openssl x509 -in &lt;証明書ファイル> -text</span></code></pre></td></tr></table></div></figure>
+
+
+<p>過去に PKCS#7 なる形式の証明書が紛れ込んでいることがあったのですが、その場合はまず以下のようにして
+証明書を取り出せば同様にいけました。</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>openssl pkcs7 -in &lt;証明書ファイル> -print_certs</span></code></pre></td></tr></table></div></figure>
+
+
+<p>&#8230;証明書の形式は、なんだかいろいろあってよくわかりません。</p>
+
+<p>覚える気もないけどな！</p>
+</div>
+
+
+  <footer>
+    <p class="meta">
+      
+  
+
+<span class="byline author vcard">Posted by <span class="fn">ywatai</span></span>
+
+      
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2012-03-07T01:38:00+09:00" pubdate data-updated="true">2012/03/07</time>
+      
+
+<span class="categories">
+  
+    <a class='category' href='/blog/categories/openssl/'>OpenSSL</a>
+  
+</span>
+
+
+    </p>
+    
+      <div class="sharing">
+  
+  <a href="http://twitter.com/share" class="twitter-share-button" data-url="http://ywatai.github.com/blog/2012/03/07/dump-ssl-certificates-with-openssl/" data-via="ywatai" data-counturl="http://ywatai.github.com/blog/2012/03/07/dump-ssl-certificates-with-openssl/" >Tweet</a>
+  
+  
+  
+</div>
+
+    
+    <p class="meta">
+      
+        <a class="basic-alignment left" href="/blog/2012/03/06/octopress-basic-configuration/" title="Previous Post: Octopress の基本設定">&laquo; Octopress の基本設定</a>
+      
+      
+    </p>
+  </footer>
+</article>
+
+</div>
+
+<aside class="sidebar">
+  
+    <section>
+  <h1>Author</h1>
+  <p>ywatai</p>
+  <p>某インターネット屋さん勤務のアプリケーションエンジニア。最近の興味はRubyとかDevOpsとか。</p>
+</section>
+<section>
+  <h1>Recent Posts</h1>
+  <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/blog/2012/03/07/dump-ssl-certificates-with-openssl/">SSL証明書のトラブルシュートに openssl</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2012/03/06/octopress-basic-configuration/">Octopress の基本設定</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2012/03/04/a-trap-of-ruby-1-dot-9-csv-library/">Ruby 1.9 の CSV ライブラリにCSVの仕様を教えられた話</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2012/03/03/start-blogging-with-octopress/">Octopress はじめました</a>
+      </li>
+    
+  </ul>
+</section>
+
+<section>
+  <h1>Latest Tweets</h1>
+  <ul id="tweets">
+    <li class="loading">Status updating...</li>
+  </ul>
+  <script type="text/javascript">
+    $.domReady(function(){
+      getTwitterFeed("ywatai", 4, false);
+    });
+  </script>
+  <script src="/javascripts/twitter.js" type="text/javascript"> </script>
+  
+    <a href="http://twitter.com/ywatai" class="twitter-follow-button" data-show-count="false">Follow @ywatai</a>
+  
+</section>
+
+
+  
+</aside>
+
+
+    </div>
+  </div>
+  <footer role="contentinfo"><p>
+  Copyright &copy; 2012 - ywatai -
+  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
+</p>
+
+</footer>
+  
+
+
+
+
+
+
+
+  <script type="text/javascript">
+    (function(){
+      var twitterWidgets = document.createElement('script');
+      twitterWidgets.type = 'text/javascript';
+      twitterWidgets.async = true;
+      twitterWidgets.src = 'http://platform.twitter.com/widgets.js';
+      document.getElementsByTagName('head')[0].appendChild(twitterWidgets);
+    })();
+  </script>
+
+
+
+
+
+</body>
+</html>
